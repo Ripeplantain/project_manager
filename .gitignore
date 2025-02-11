@@ -1,0 +1,48 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+.virtualenv/
+
+# Django specific
+db.sqlite3
+*.sqlite3
+media/
+staticfiles/
+static/
+
+# Logs
+logs/
+*.log
+*.out
+*.err
+
+# Environment variables
+.env
+*.env
+
+# Pytest / Coverage
+.coverage
+htmlcov/
+*.cover
+.cache/
+nosetests.xml
+coverage.xml
+*.pytest_cache/
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Migrations cache (optional, keep if needed)
+**/migrations/__pycache__/
+
+# Docker
+*.dockerfile
+docker-compose.override.yml
