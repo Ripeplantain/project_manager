@@ -6,11 +6,21 @@ from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth import authenticate, get_user_model
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
+from django.core.validators import EmailValidator
+from authentication.serializers import UserSerializer
+
 
 
 class AuthViewSet(viewsets.ViewSet):
     renderer_classes = [renderers.JSONRenderer]
     permission_classes = [permissions.AllowAny]
+    serializer_class = UserSerializer
+
+    @action(detail=False, methods=["get"])
+    def users(self, request):
+        user_model = get_user_model()
+        users = user_model.objects.all()
+        return Response(self.serializer_class(users, many=True).data)
 
     @action(detail=False, methods=["post"])
     def login(self, request):
@@ -53,6 +63,13 @@ class AuthViewSet(viewsets.ViewSet):
 
         if not username or not password:
             return Response({"error": "Username and password are required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if email:
+            email_validator = EmailValidator()
+            try:
+                email_validator(email)
+            except ValidationError:
+                return Response({"error": "Invalid email format"}, status=status.HTTP_400_BAD_REQUEST)
 
         user_model = get_user_model()
         try:

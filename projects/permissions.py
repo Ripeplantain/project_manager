@@ -6,22 +6,28 @@ class ProjectPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated
 
-    def has_object_permission(self, request, view, obj):
-        try:
-            membership = ProjectMembership.objects.get(
-                user=request.user,
-                project=obj
-            )
-        except ProjectMembership.DoesNotExist:
-            return False
-
-        if request.method in permissions.SAFE_METHODS:
-            return membership.role in ['OWNER', 'EDITOR', 'READER']
-        elif request.method in ['PUT', 'PATCH']:
-            return membership.role in ['OWNER', 'EDITOR']
-        elif request.method == 'DELETE':
-            return membership.role == 'OWNER'
+def has_object_permission(self, request, view, obj):
+    try:
+        membership = ProjectMembership.objects.get(
+            user=request.user,
+            project=obj
+        )
+    except ProjectMembership.DoesNotExist:
         return False
+
+    if request.method in permissions.SAFE_METHODS:
+        return membership.role in ['OWNER', 'EDITOR', 'READER']
+
+    elif request.method in ['PUT', 'PATCH']:
+        return membership.role in ['OWNER', 'EDITOR']
+
+    elif request.method == 'DELETE':
+        return membership.role == 'OWNER'
+
+    elif view.action == 'add_member':
+        return membership.role == 'OWNER'
+
+    return False
 
 class CommentPermission(permissions.BasePermission):
     def has_permission(self, request, view):
